@@ -2,28 +2,30 @@
 
 > A full-featured, AI-powered email management platform featuring sub-second AI email drafting, automatic career/internship opportunity detection, trust & scam verification, deadline reminders, and an interactive analytics suite.
 
-[![React](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![Node.js](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Supabase](https://img.shields.io/badge/Database-Supabase%20PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
-[![NVIDIA](https://img.shields.io/badge/AI%20Engine-NVIDIA%20NIM%20(Llama%203.2)-76B900?logo=nvidia&logoColor=white)](https://integrate.api.nvidia.com/)
-[![Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?logo=vercel&logoColor=white)](https://agenticemail-pdkn.vercel.app)
-[![Render](https://img.shields.io/badge/Deployed-Render-46E3B7?logo=render&logoColor=black)](https://emailai-backend-gr8m.onrender.com)
+<div align="center">
+
+[![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-61DAFB?logo=react&logoColor=black&style=for-the-badge)](https://react.dev/)
+[![Node.js](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-339933?logo=node.js&logoColor=white&style=for-the-badge)](https://nodejs.org/)
+[![Supabase](https://img.shields.io/badge/Database-Supabase%20PostgreSQL-3ECF8E?logo=supabase&logoColor=white&style=for-the-badge)](https://supabase.com/)
+[![NVIDIA](https://img.shields.io/badge/AI%20Engine-NVIDIA%20NIM%20(Llama%203.2)-76B900?logo=nvidia&logoColor=white&style=for-the-badge)](https://integrate.api.nvidia.com/)
+[![Vercel](https://img.shields.io/badge/Frontend%20Host-Vercel-000000?logo=vercel&logoColor=white&style=for-the-badge)](https://agenticemail-pdkn.vercel.app)
+[![Render](https://img.shields.io/badge/Backend%20Host-Render-46E3B7?logo=render&logoColor=black&style=for-the-badge)](https://emailai-backend-gr8m.onrender.com)
+
+</div>
 
 ---
 
 ## 🌐 Live Deployments & Demo Video
 
-* 🚀 **Live Web App (Vercel)**: [https://agenticemail-pdkn.vercel.app](https://agenticemail-pdkn.vercel.app)
-* ⚙️ **Backend API Server (Render)**: [https://emailai-backend-gr8m.onrender.com](https://emailai-backend-gr8m.onrender.com)
-* 📖 **Interactive Swagger Docs**: [https://emailai-backend-gr8m.onrender.com/api/docs](https://emailai-backend-gr8m.onrender.com/api/docs)
-* 🩺 **API Health Check**: [https://emailai-backend-gr8m.onrender.com/api/health](https://emailai-backend-gr8m.onrender.com/api/health)
+* 🚀 **Live Web Application (Vercel)**: [https://agenticemail-pdkn.vercel.app](https://agenticemail-pdkn.vercel.app)
+* ⚙️ **Production API Gateway (Render)**: [https://emailai-backend-gr8m.onrender.com](https://emailai-backend-gr8m.onrender.com)
+* 📖 **Interactive Swagger API Docs**: [https://emailai-backend-gr8m.onrender.com/api/docs](https://emailai-backend-gr8m.onrender.com/api/docs)
+* 🩺 **Backend Health Endpoint**: [https://emailai-backend-gr8m.onrender.com/api/health](https://emailai-backend-gr8m.onrender.com/api/health)
 
 ### 🎥 Live Video Walkthrough
 [![EmailAI Video Walkthrough](https://img.shields.io/badge/Watch%20Demo%20Video-YouTube%20%2F%20Loom-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](YOUR_VIDEO_LINK_HERE)
 
-> *Replace `YOUR_VIDEO_LINK_HERE` with your YouTube, Loom, or Drive video walkthrough link.*
-
----
+> *Replace `YOUR_VIDEO_LINK_HERE` with your YouTube or Loom video walkthrough link.*
 
 ---
 
@@ -31,7 +33,7 @@
 
 [![View All Screenshots on Google Drive](https://img.shields.io/badge/Google%20Drive-View%20All%20Screenshots-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/drive/folders/1-QXVNR0at_n_RpyvkaBqGRZ4WDx9m11x?usp=sharing)
 
-📂 **Direct Link**: [Google Drive Screenshots Folder](https://drive.google.com/drive/folders/1-QXVNR0at_n_RpyvkaBqGRZ4WDx9m11x?usp=sharing)
+📂 **Google Drive Folder**: [Click here to view all full-resolution screenshots](https://drive.google.com/drive/folders/1-QXVNR0at_n_RpyvkaBqGRZ4WDx9m11x?usp=sharing)
 
 <div align="center">
 
@@ -57,7 +59,65 @@
 
 ---
 
-## 🏛️ System Architecture & Data Flow
+## 🏛️ System Architecture & Deployment Topology
+
+### Production Deployment Topology
+```
+                 👤 USER / BROWSER
+                         │
+                         ▼
+              ┌─────────────────────┐
+              │       VERCEL        │
+              │  Frontend React App │
+              │  (Vite Single Page) │
+              └──────────┬──────────┘
+                         │
+                         │ 📡 REST API & WebSockets
+                         ▼
+              ┌─────────────────────┐
+              │       RENDER        │
+              │  Backend API Server │
+              │  (Node.js / Express)│
+              └──────────┬──────────┘
+                         │
+            ┌────────────┴────────────┐
+            │ SQL Queries             │ LLM Inference (~1.0s)
+            ▼                         ▼
+  ┌─────────────────────┐   ┌─────────────────────┐
+  │      SUPABASE       │   │     NVIDIA NIM      │
+  │     PostgreSQL      │   │   Meta Llama 3.2    │
+  │ Relational Database │   │  11B Vision Instruct│
+  └─────────────────────┘   └─────────────────────┘
+```
+
+### Continuous Deployment (CI/CD) Pipeline
+```
+                    ┌─────────────────────────┐
+                    │    GitHub Repository    │
+                    │ (Mohilc/agenticemail)   │
+                    └────────────┬────────────┘
+                                 │
+                   ┌─────────────┴─────────────┐
+                   │ Auto-Trigger on git push  │
+                   ▼                           ▼
+         ┌───────────────────┐       ┌───────────────────┐
+         │      VERCEL       │       │      RENDER       │
+         │  Frontend Build   │       │   Backend Build   │
+         │  (Vite Production)│       │  (Node.js Server) │
+         └─────────┬─────────┘       └─────────┬─────────┘
+                   │                           │
+                   │ API Requests              │ Database Sync
+                   └──────────────────────────>│
+                                               ▼
+                                     ┌───────────────────┐
+                                     │     SUPABASE      │
+                                     │  PostgreSQL Cloud │
+                                     └───────────────────┘
+```
+
+---
+
+## 🔄 Detailed Request Lifecycle & Flow
 
 ```mermaid
 flowchart TD
@@ -66,7 +126,6 @@ flowchart TD
     classDef backendStyle fill:#0f172a,stroke:#22c55e,stroke-width:2px,color:#ffffff;
     classDef aiStyle fill:#1e1e38,stroke:#f59e0b,stroke-width:2px,color:#ffffff;
     classDef dbStyle fill:#111827,stroke:#38bdf8,stroke-width:2px,color:#ffffff;
-    classDef devopsStyle fill:#18181b,stroke:#a855f7,stroke-width:2px,color:#ffffff;
 
     subgraph CLIENT ["🖥️ FRONTEND CLIENT (React 18 + Vite on Vercel)"]
         UI["🎨 Modern UI & Glassmorphism Components"]
@@ -79,61 +138,47 @@ flowchart TD
     subgraph BACKEND ["⚙️ BACKEND API LAYER (Node.js + Express on Render)"]
         API["📡 REST API Gateways (/api/*)"]
         AUTH_MW["🔒 JWT Auth & Security Middleware"]
-        CRON["⏰ Background Cron Scheduler (Emails & Deadlines)"]
+        CRON["⏰ Background Cron Scheduler"]
         SOCKET_S["🔔 Socket.io Push Server"]
         OPP_CONTROLLER["🛡️ Opportunity & Fraud Controller"]
     end
     class BACKEND,API,AUTH_MW,CRON,SOCKET_S,OPP_CONTROLLER backendStyle;
 
     subgraph AI_ENGINE ["🤖 AI INTELLIGENCE LAYER (NVIDIA NIM)"]
-        LLM["⚡ Meta Llama 3.2 11B Vision Instruct (~1.0s)"]
-        PROMPT_ENG["🎯 Prompt Engineering & Tone Synthesis"]
+        LLM["⚡ Meta Llama 3.2 11B (~1.0s)"]
+        PROMPT_ENG["🎯 Prompt Engineering & Tone Customizer"]
         FRAUD_SCAN["🛡️ Authenticity, Scam & Deadline Extractor"]
         COVER_LETTER["✨ 1-Click AI Cover Letter Generator"]
     end
     class AI_ENGINE,LLM,PROMPT_ENG,FRAUD_SCAN,COVER_LETTER aiStyle;
 
     subgraph DATABASE ["🗄️ PERSISTENCE LAYER (Supabase PostgreSQL)"]
-        USERS_TB[("👤 users\n(Auth, Profiles, Settings)")]
-        EMAILS_TB[("📬 emails & recipients\n(Inbox, Sent, Starred, Threads)")]
-        OPPS_TB[("💼 job_opportunities\n(Trust Scores, Deadlines, Reminders)")]
-        LABELS_TB[("🏷️ labels & junctions\n(Custom Color Tags)")]
+        USERS_TB[("👤 users\n(Auth & Profiles)")]
+        EMAILS_TB[("📬 emails & recipients\n(Threads & Folders)")]
+        OPPS_TB[("💼 job_opportunities\n(Trust Scores & Deadlines)")]
+        LABELS_TB[("🏷️ labels\n(Custom Color Tags)")]
     end
     class DATABASE,USERS_TB,EMAILS_TB,OPPS_TB,LABELS_TB dbStyle;
 
-    %% Data Connections & Flow
+    %% Data Connections
     UI <== "1. User Actions & REST Queries" ==> API
     COMPOSER -- "2. Trigger AI Drafter" --> API
     OPP_DASH -- "3. Scan Opportunities & Set Alerts" --> OPP_CONTROLLER
-
-    API <== "4. Verify Tokens & Passwords" ==> AUTH_MW
-    API <== "5. Read / Write Relational Data" ==> DATABASE
-
-    OPP_CONTROLLER -- "6. Fast Inference Request" --> LLM
+    API <== "4. Verify Tokens" ==> AUTH_MW
+    API <== "5. Read / Write Data" ==> DATABASE
+    OPP_CONTROLLER -- "6. Fast NIM Inference" --> LLM
     API -- "7. Smart Replies / Summaries" --> LLM
     LLM --> PROMPT_ENG
     LLM --> FRAUD_SCAN
     LLM --> COVER_LETTER
-
-    CRON -- "8. Dispatch Scheduled Emails" --> EMAILS_TB
+    CRON -- "8. Scheduled Emails & Alerts" --> EMAILS_TB
     CRON -- "9. Push Instant Alerts" --> SOCKET_S
-    SOCKET_S <== "10. Real-Time WebSocket Channel" ==> SOCKET_C
+    SOCKET_S <== "10. Real-Time WebSockets" ==> SOCKET_C
 ```
 
 ---
 
-### 🔄 End-to-End Request Lifecycle
-
-| Phase | Flow Description | Technologies Used |
-|---|---|---|
-| **1. Composition & AI Drafting** | The user inputs a prompt and chooses a tone (*Professional, Friendly, Urgent*). The backend sends structured system prompts to NVIDIA NIM, returning a formatted draft in **~1.0 second**. | React, Express, NVIDIA NIM (Llama 3.2) |
-| **2. Career & Scam Detection** | Incoming emails are scanned for career keywords. The AI extracts the job title, company, deadline, and calculates a **0–100% Trust Score** by evaluating domain legitimacy and fraud signals. | Llama 3.2 AI, Regex Pipeline, Supabase |
-| **3. Instant Real-Time Push** | When an email arrives or an application deadline triggers an alert, the backend pushes events instantly to active browser tabs without page refreshes. | WebSockets (Socket.io) |
-| **4. Secure Data Persistence** | User passwords are encrypted with bcrypt. Relational email threads, label junctions, and opportunity deadlines are indexed in PostgreSQL for low-latency queries. | Supabase PostgreSQL, JWT, bcryptjs |
-
----
-
-## 🚀 Core Features Breakdown
+## 🚀 Key Features Breakdown
 
 ### 1. 🤖 AI Writing Assistant (Sub-Second Latency)
 * **AI Email Drafter**: Generate full, context-rich emails from quick prompts with selectable tones (*Professional, Friendly, Urgent, Persuasive*).
@@ -161,87 +206,106 @@ flowchart TD
 
 ---
 
-## 🛠️ Local Development Setup
+## 🚀 Complete Setup & Deployment Guide
 
-### 1. Prerequisites
-* **Node.js** v18+ installed
-* A free **[Supabase](https://supabase.com)** project
-* An **[NVIDIA NIM](https://build.nvidia.com)** API key
+### Phase 1: Supabase Database Setup
 
-### 2. Clone the Repository
+1. Create a free account at **[supabase.com](https://supabase.com)** and create a new project named **`EmailAI`**.
+2. Go to the **SQL Editor** tab in your Supabase project dashboard.
+3. Open [`supabase/migrations/20260827_schema.sql`](./supabase/migrations/20260827_schema.sql) from this repository, paste the SQL code into the editor, and click **Run**.
+4. Go to **Project Settings** (gear icon at bottom left) -> **API**.
+5. Copy your **Project URL** and the **`service_role` secret key** (starts with `ey...`).
+
+---
+
+### Phase 2: Deploy Backend to Render
+
+1. Create an account at **[render.com](https://render.com/)** and link your GitHub account.
+2. Click **New +** -> **Web Service**.
+3. Select your repository: **`Mohilc/agenticemail`**.
+4. Configure the service settings:
+   * **Name**: `emailai-backend`
+   * **Root Directory**: `backend`
+   * **Runtime**: `Node`
+   * **Build Command**: `npm install`
+   * **Start Command**: `node server.js`
+5. Click **Advanced** -> **Add Environment Variable** and add:
+
+| Key | Example / Recommended Value |
+|---|---|
+| `PORT` | `10000` |
+| `NODE_ENV` | `production` |
+| `JWT_SECRET` | `emailai_secure_jwt_secret_2026` |
+| `JWT_REFRESH_SECRET` | `emailai_secure_jwt_refresh_secret_2026` |
+| `OPENAI_API_KEY` | *(Your NVIDIA NIM API key starting with `nvapi-...`)* |
+| `OPENAI_BASE_URL` | `https://integrate.api.nvidia.com/v1` |
+| `AI_MODEL` | `meta/llama-3.2-11b-vision-instruct` |
+| `SUPABASE_URL` | `https://your-project.supabase.co` |
+| `SUPABASE_KEY` | *(Your Supabase `service_role` secret key)* |
+| `CLIENT_URL` | `https://agenticemail-pdkn.vercel.app` |
+
+6. Click **Create Web Service**. Render will build and deploy your backend server with a live URL (e.g. `https://emailai-backend-gr8m.onrender.com`).
+
+---
+
+### Phase 3: Deploy Frontend to Vercel
+
+1. Create an account at **[vercel.com](https://vercel.com/)** and import your GitHub repository: **`Mohilc/agenticemail`**.
+2. Configure the project settings:
+   * **Framework Preset**: `Vite`
+   * **Root Directory**: `frontend`
+   * **Build Command**: `npm run build`
+   * **Output Directory**: `dist`
+   * **Install Command**: `npm install`
+3. Expand **Environment Variables** and add:
+
+| Key | Value |
+|---|---|
+| `VITE_API_URL` | `https://emailai-backend-gr8m.onrender.com/api` |
+
+4. Click **Deploy**. Vercel will build and provide your live frontend URL (e.g. `https://agenticemail-pdkn.vercel.app`).
+
+---
+
+### Phase 4: Local Development Setup
+
 ```bash
+# 1. Clone the repository
 git clone https://github.com/Mohilc/agenticemail.git
 cd agenticemail
-```
 
-### 3. Install Dependencies
-```bash
-# Install root dependencies
+# 2. Install all dependencies
 npm install
-
-# Install backend dependencies
 cd backend && npm install
-
-# Install frontend dependencies
 cd ../frontend && npm install
-```
 
-### 4. Configure Environment Variables
-
-Create a `.env` file in the `backend/` directory:
-
-```env
-PORT=5000
-NODE_ENV=development
-
-# JWT Secrets
-JWT_SECRET=your_jwt_secret_key_2026
-JWT_REFRESH_SECRET=your_jwt_refresh_secret_key_2026
-JWT_EXPIRE=15m
-JWT_REFRESH_EXPIRE=7d
-
-# NVIDIA NIM / OpenAI API Key
-OPENAI_API_KEY=your_nvidia_nim_api_key
-OPENAI_BASE_URL=https://integrate.api.nvidia.com/v1
-AI_MODEL=meta/llama-3.2-11b-vision-instruct
-
-# Frontend URL
-CLIENT_URL=http://localhost:5173
-
-# Supabase Credentials
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your_supabase_service_role_secret_key
-```
-
-### 5. Initialize Supabase Database Tables
-Open your **[Supabase SQL Editor](https://supabase.com/dashboard/project/_/sql)** and execute the script located in `supabase/migrations/20260827_schema.sql`.
-
-### 6. Run Locally
-From the project root directory, run:
-```bash
+# 3. Create backend/.env file and fill in your keys
+# 4. Start local development server (Frontend + Backend)
 npm run dev
 ```
+
 * **Frontend**: `http://localhost:5173`
 * **Backend API**: `http://localhost:5000/api`
 
 ---
 
-## 📡 API Endpoints Reference
+## 📡 REST API Endpoints Reference
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/auth/signup` | Register a new user account |
-| `POST` | `/api/auth/login` | Log in and receive JWT tokens |
-| `GET` | `/api/emails/:folder` | Fetch emails by folder (inbox, sent, drafts, etc.) |
-| `POST` | `/api/emails` | Compose and send or schedule an email |
-| `PATCH` | `/api/emails/:id` | Update email flags (read, star, trash, labels) |
-| `POST` | `/api/ai/compose` | AI prompt email drafter with tone selection |
-| `POST` | `/api/ai/smart-reply` | Generate 3 contextual smart replies |
-| `POST` | `/api/ai/summarize` | Generate concise summary of email thread |
-| `GET` | `/api/opportunities` | List detected job & internship opportunities |
-| `POST` | `/api/opportunities/analyze/:emailId` | AI scan of email for job opportunities |
-| `POST` | `/api/opportunities/:id/draft` | 1-Click AI cover letter & pitch generator |
-| `GET` | `/api/analytics` | Fetch analytics, volume, and sentiment stats |
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|:---:|
+| `POST` | `/api/auth/signup` | Register a new user account | ❌ |
+| `POST` | `/api/auth/login` | Authenticate user & issue JWT tokens | ❌ |
+| `GET` | `/api/emails/:folder` | Fetch emails by folder (inbox, sent, drafts, trash, spam) | ✅ |
+| `POST` | `/api/emails` | Compose, send, or schedule an email | ✅ |
+| `PATCH` | `/api/emails/:id` | Update email flags (read, star, labels, trash) | ✅ |
+| `DELETE`| `/api/emails/:id` | Permanently delete an email | ✅ |
+| `POST` | `/api/ai/compose` | AI email drafter with tone selection | ✅ |
+| `POST` | `/api/ai/smart-reply` | Generate 3 contextual 1-click replies | ✅ |
+| `POST` | `/api/ai/summarize` | Summarize long email threads | ✅ |
+| `GET` | `/api/opportunities` | List detected job & internship opportunities | ✅ |
+| `POST` | `/api/opportunities/analyze/:emailId` | Run AI opportunity & fraud scan on email | ✅ |
+| `POST` | `/api/opportunities/:id/draft` | 1-Click AI cover letter & pitch generator | ✅ |
+| `GET` | `/api/analytics` | Fetch email traffic, peak hours, and sentiment stats | ✅ |
 
 ---
 
