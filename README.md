@@ -25,31 +25,33 @@
 
 ---
 
+---
+
 ## 📸 Screenshots & UI Showcase
+
+[![View All Screenshots on Google Drive](https://img.shields.io/badge/Google%20Drive-View%20All%20Screenshots-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/drive/folders/1-QXVNR0at_n_RpyvkaBqGRZ4WDx9m11x?usp=sharing)
+
+📂 **Direct Link**: [Google Drive Screenshots Folder](https://drive.google.com/drive/folders/1-QXVNR0at_n_RpyvkaBqGRZ4WDx9m11x?usp=sharing)
 
 <div align="center">
 
 ### 1. 🔐 Authentication & Login
-![Login Screen](./screenshots/login.png)
-*(Drop your login screenshot at `screenshots/login.png` or paste an image URL)*
+[![Login Screen](https://img.shields.io/badge/Screenshot-Login%20Screen-6366f1?style=flat-square)](https://drive.google.com/drive/folders/1-QXVNR0at_n_RpyvkaBqGRZ4WDx9m11x?usp=sharing)
 
 ---
 
 ### 2. 📬 Modern Inbox & Real-Time Dashboard
-![Inbox Dashboard](./screenshots/dashboard.png)
-*(Drop your dashboard screenshot at `screenshots/dashboard.png`)*
+[![Inbox Dashboard](https://img.shields.io/badge/Screenshot-Inbox%20%26%20Dashboard-22c55e?style=flat-square)](https://drive.google.com/drive/folders/1-QXVNR0at_n_RpyvkaBqGRZ4WDx9m11x?usp=sharing)
 
 ---
 
 ### 3. ✍️ AI Compose Assistant & Tone Customizer
-![AI Compose Assistant](./screenshots/compose.png)
-*(Drop your compose modal screenshot at `screenshots/compose.png`)*
+[![AI Compose Assistant](https://img.shields.io/badge/Screenshot-AI%20Compose%20Assistant-8b5cf6?style=flat-square)](https://drive.google.com/drive/folders/1-QXVNR0at_n_RpyvkaBqGRZ4WDx9m11x?usp=sharing)
 
 ---
 
 ### 4. 🛡️ Career Opportunities & Scam Verifier
-![Career Opportunities Tracker](./screenshots/opportunities.png)
-*(Drop your opportunities tracker screenshot at `screenshots/opportunities.png`)*
+[![Career Opportunities Tracker](https://img.shields.io/badge/Screenshot-Career%20Opportunities%20Tracker-f97316?style=flat-square)](https://drive.google.com/drive/folders/1-QXVNR0at_n_RpyvkaBqGRZ4WDx9m11x?usp=sharing)
 
 </div>
 
