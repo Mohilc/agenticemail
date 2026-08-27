@@ -10,7 +10,11 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      const newSocket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000', {
+      const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      const defaultSocketUrl = isLocalhost ? 'http://localhost:5000' : 'https://emailai-backend-gr8m.onrender.com';
+      const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || defaultSocketUrl;
+
+      const newSocket = io(socketUrl, {
         transports: ['websocket', 'polling'],
       });
 
