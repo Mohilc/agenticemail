@@ -7,7 +7,7 @@
 [![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-61DAFB?logo=react&logoColor=black&style=for-the-badge)](https://react.dev/)
 [![Node.js](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-339933?logo=node.js&logoColor=white&style=for-the-badge)](https://nodejs.org/)
 [![Supabase](https://img.shields.io/badge/Database-Supabase%20PostgreSQL-3ECF8E?logo=supabase&logoColor=white&style=for-the-badge)](https://supabase.com/)
-[![NVIDIA](https://img.shields.io/badge/AI%20Engine-NVIDIA%20NIM%20(Llama%203.2)-76B900?logo=nvidia&logoColor=white&style=for-the-badge)](https://integrate.api.nvidia.com/)
+[![Google Gemini](https://img.shields.io/badge/AI%20Engine-Google%20Gemini%203.6%20Flash-4285F4?logo=google&logoColor=white&style=for-the-badge)](https://aistudio.google.com/)
 [![Vercel](https://img.shields.io/badge/Frontend%20Host-Vercel-000000?logo=vercel&logoColor=white&style=for-the-badge)](https://agenticemail-pdkn.vercel.app)
 [![Render](https://img.shields.io/badge/Backend%20Host-Render-46E3B7?logo=render&logoColor=black&style=for-the-badge)](https://emailai-backend-gr8m.onrender.com)
 
@@ -81,12 +81,12 @@
               └──────────┬──────────┘
                          │
             ┌────────────┴────────────┐
-            │ SQL Queries             │ LLM Inference (~1.0s)
+            │ SQL Queries             │ LLM Inference (<1.0s)
             ▼                         ▼
   ┌─────────────────────┐   ┌─────────────────────┐
-  │      SUPABASE       │   │     NVIDIA NIM      │
-  │     PostgreSQL      │   │   Meta Llama 3.2    │
-  │ Relational Database │   │  11B Vision Instruct│
+  │      SUPABASE       │   │    GOOGLE GEMINI    │
+  │     PostgreSQL      │   │  Gemini 3.6 Flash   │
+  │ Relational Database │   │ OpenAI-Compatible   │
   └─────────────────────┘   └─────────────────────┘
 ```
 
@@ -203,9 +203,9 @@ graph TB
 | `NODE_ENV` | `production` |
 | `JWT_SECRET` | `emailai_secure_jwt_secret_2026` |
 | `JWT_REFRESH_SECRET` | `emailai_secure_jwt_refresh_secret_2026` |
-| `OPENAI_API_KEY` | *(Your NVIDIA NIM API key starting with `nvapi-...`)* |
-| `OPENAI_BASE_URL` | `https://integrate.api.nvidia.com/v1` |
-| `AI_MODEL` | `meta/llama-3.2-11b-vision-instruct` |
+| `OPENAI_API_KEY` | *(Your Google Gemini API key from aistudio.google.com/apikey)* |
+| `OPENAI_BASE_URL` | `https://generativelanguage.googleapis.com/v1beta/openai/` |
+| `AI_MODEL` | `gemini-3.6-flash` |
 | `SUPABASE_URL` | `https://your-project.supabase.co` |
 | `SUPABASE_KEY` | *(Your Supabase `service_role` secret key)* |
 | `CLIENT_URL` | `https://agenticemail-pdkn.vercel.app` |

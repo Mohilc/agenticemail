@@ -8,6 +8,7 @@ const composeAssist = async (req, res, next) => {
     const result = await aiService.composeAssist(prompt, tone, context);
     res.json({ success: true, data: { content: result } });
   } catch (error) {
+    console.error('AI compose-assist error:', error?.response?.data || error?.message || error);
     next(error);
   }
 };

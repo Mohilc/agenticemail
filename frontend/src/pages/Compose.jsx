@@ -101,7 +101,8 @@ const Compose = () => {
       setFormData((prev) => ({ ...prev, body: res.data.content }));
       toast.success('AI generated content!');
     } catch (err) {
-      toast.error('AI compose failed');
+      const msg = err?.message || err?.errors?.[0] || 'AI compose failed';
+      toast.error(msg);
     } finally {
       setAiLoading(false);
     }

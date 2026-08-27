@@ -1,32 +1,38 @@
 const OpenAI = require('openai');
 
-// Helper to determine base URL based on API key or environment variable
-const getBaseUrl = (apiKey) => {
-  if (process.env.OPENAI_BASE_URL) return process.env.OPENAI_BASE_URL;
-  if (process.env.AI_BASE_URL) return process.env.AI_BASE_URL;
+const primaryApiKey = process.env.OPENAI_API_KEY;
+const deepseekApiKey = process.env.DEEPSEEK_API_KEY || primaryApiKey;
+
+const getProviderConfig = (apiKey, envBaseUrl, envModel) => {
+  let baseURL = envBaseUrl;
+  let model = envModel;
+
   if (apiKey && apiKey.startsWith('nvapi-')) {
-    return 'https://integrate.api.nvidia.com/v1';
+    if (!baseURL || baseURL.includes('googleapis')) baseURL = 'https://integrate.api.nvidia.com/v1';
+    if (!model || model.includes('gemini') || model.includes('llama-3.2-11b')) model = 'deepseek-ai/deepseek-v4-flash-0731';
+  } else if (apiKey && (apiKey.startsWith('AIzaSy') || apiKey.startsWith('AQ.'))) {
+    if (!baseURL || baseURL.includes('nvidia')) baseURL = 'https://generativelanguage.googleapis.com/v1beta/openai/';
+    if (!model || model.includes('llama') || model.includes('deepseek')) model = 'gemini-3.6-flash';
   }
-  return undefined;
+
+  return { baseURL: baseURL || undefined, model: model || 'gemini-3.6-flash' };
 };
 
-// Primary AI Client
-const primaryApiKey = process.env.OPENAI_API_KEY || process.env.NVIDIA_API_KEY;
+const primaryConfig = getProviderConfig(primaryApiKey, process.env.OPENAI_BASE_URL, process.env.AI_MODEL);
+const deepseekConfig = getProviderConfig(deepseekApiKey, process.env.DEEPSEEK_BASE_URL || process.env.OPENAI_BASE_URL, process.env.DEEPSEEK_MODEL || process.env.AI_MODEL);
+
 const openai = new OpenAI({
   apiKey: primaryApiKey || 'dummy-key',
-  baseURL: getBaseUrl(primaryApiKey),
+  baseURL: primaryConfig.baseURL,
 });
 
-// DeepSeek / Secondary Agent Client
-const deepseekApiKey = process.env.DEEPSEEK_API_KEY || primaryApiKey;
 const deepseekClient = new OpenAI({
   apiKey: deepseekApiKey || 'dummy-key',
-  baseURL: process.env.DEEPSEEK_BASE_URL || getBaseUrl(deepseekApiKey) || 'https://integrate.api.nvidia.com/v1',
+  baseURL: deepseekConfig.baseURL,
 });
 
-// Default models
-const DEFAULT_MODEL = process.env.AI_MODEL || process.env.OPENAI_MODEL || (primaryApiKey?.startsWith('nvapi-') ? 'deepseek-ai/deepseek-v4-flash-0731' : 'gpt-4o-mini');
-const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL || 'deepseek-ai/deepseek-v4-flash-0731';
+const DEFAULT_MODEL = primaryConfig.model;
+const DEEPSEEK_MODEL = deepseekConfig.model;
 
 /**
  * Utility to parse JSON safely from model responses (handles markdown codeblocks and thinking tags)
@@ -71,7 +77,8 @@ Keep the email concise, clear, and well-structured.`;
     temperature: 0.7,
   });
 
-  return response.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  const content = response?.choices?.[0]?.message?.content || '';
+  return content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 };
 
 /**
@@ -84,19 +91,19 @@ const generateSmartReplies = async (emailContent, senderName, model = DEFAULT_MO
       {
         role: 'system',
         content: `You are an email assistant. Generate exactly 3 short, contextually appropriate reply suggestions for the given email. 
-Return them as a JSON array of strings or a JSON object with a "replies" array. Each reply should be 1-2 sentences max.
-Example output format: {"replies": ["Thanks for the update!", "I'll review this and get back to you.", "Sounds good, let's schedule a call."]}`,
+Return ONLY a valid JSON array of 3 strings. Example: ["Thanks for the update!", "I'll review this and get back to you.", "Sounds good, let's schedule a call."]`,
       },
       {
         role: 'user',
         content: `Email from ${senderName}:\n${emailContent}`,
       },
     ],
-    max_tokens: 300,
-    temperature: 0.8,
+    max_tokens: 500,
+    temperature: 0.7,
   });
 
-  const parsed = parseModelJson(response.choices[0].message.content, null);
+  const content = response?.choices?.[0]?.message?.content || '';
+  const parsed = parseModelJson(content, null);
   if (parsed) {
     if (Array.isArray(parsed)) return parsed;
     if (Array.isArray(parsed.replies)) return parsed.replies;
@@ -121,11 +128,12 @@ const summarizeEmail = async (emailContent, model = DEFAULT_MODEL) => {
       },
       { role: 'user', content: emailContent },
     ],
-    max_tokens: 150,
+    max_tokens: 500,
     temperature: 0.3,
   });
 
-  return response.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  const content = response?.choices?.[0]?.message?.content || '';
+  return content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 };
 
 /**
@@ -137,19 +145,20 @@ const analyzeSentiment = async (emailContent, model = DEFAULT_MODEL) => {
     messages: [
       {
         role: 'system',
-        content: `Analyze the sentiment of the following email. Return a JSON object with:
+        content: `Analyze the sentiment of the following email. Return ONLY a JSON object with:
 - "sentiment": one of "positive", "neutral", or "negative"
 - "score": a number from -1 (very negative) to 1 (very positive)
 - "explanation": a brief one-sentence explanation`,
       },
       { role: 'user', content: emailContent },
     ],
-    max_tokens: 150,
+    max_tokens: 500,
     temperature: 0.2,
   });
 
+  const content = response?.choices?.[0]?.message?.content || '';
   return parseModelJson(
-    response.choices[0].message.content,
+    content,
     { sentiment: 'neutral', score: 0, explanation: 'Unable to analyze sentiment' }
   );
 };
@@ -163,7 +172,7 @@ const detectSpam = async (emailContent, subject, model = DEFAULT_MODEL) => {
     messages: [
       {
         role: 'system',
-        content: `Analyze if the following email is spam. Return a JSON object with:
+        content: `Analyze if the following email is spam. Return ONLY a JSON object with:
 - "isSpam": boolean
 - "confidence": number from 0 to 1
 - "reason": brief explanation`,
@@ -173,12 +182,13 @@ const detectSpam = async (emailContent, subject, model = DEFAULT_MODEL) => {
         content: `Subject: ${subject}\n\n${emailContent}`,
       },
     ],
-    max_tokens: 150,
+    max_tokens: 500,
     temperature: 0.1,
   });
 
+  const content = response?.choices?.[0]?.message?.content || '';
   return parseModelJson(
-    response.choices[0].message.content,
+    content,
     { isSpam: false, confidence: 0, reason: 'Unable to analyze' }
   );
 };
@@ -193,15 +203,16 @@ const generateSubject = async (emailBody, model = DEFAULT_MODEL) => {
       {
         role: 'system',
         content:
-          'Generate a concise, professional email subject line for the following email body. Return only the subject line text, nothing else.',
+          'Generate a concise, professional email subject line for the following email body. Return only the plain text subject line, nothing else.',
       },
       { role: 'user', content: emailBody },
     ],
-    max_tokens: 50,
+    max_tokens: 300,
     temperature: 0.6,
   });
 
-  return response.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  const content = response?.choices?.[0]?.message?.content || '';
+  return content.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/^Subject:\s*/i, '').trim();
 };
 
 /**
@@ -213,7 +224,7 @@ const categorizeEmail = async (emailContent, subject, model = DEFAULT_MODEL) => 
     messages: [
       {
         role: 'system',
-        content: `Categorize the following email into exactly one category. Return a JSON object with:
+        content: `Categorize the following email into exactly one category. Return ONLY a JSON object with:
 - "category": one of "primary", "social", "promotions", "updates", "forums"
 - "confidence": number from 0 to 1`,
       },
@@ -222,12 +233,13 @@ const categorizeEmail = async (emailContent, subject, model = DEFAULT_MODEL) => 
         content: `Subject: ${subject}\n\n${emailContent}`,
       },
     ],
-    max_tokens: 100,
+    max_tokens: 300,
     temperature: 0.2,
   });
 
+  const content = response?.choices?.[0]?.message?.content || '';
   return parseModelJson(
-    response.choices[0].message.content,
+    content,
     { category: 'primary', confidence: 0.5 }
   );
 };
@@ -241,7 +253,7 @@ const generateTemplate = async (description, category = 'business', model = DEFA
     messages: [
       {
         role: 'system',
-        content: `Generate a reusable email template for the "${category}" category. Return a JSON object with:
+        content: `Generate a reusable email template for the "${category}" category. Return ONLY a JSON object with:
 - "name": a short template name
 - "subject": email subject line with [PLACEHOLDER] for dynamic content
 - "body": email body with [PLACEHOLDER] markers for dynamic content
@@ -249,12 +261,13 @@ Make it professional and well-structured.`,
       },
       { role: 'user', content: description },
     ],
-    max_tokens: 600,
+    max_tokens: 800,
     temperature: 0.7,
   });
 
+  const content = response?.choices?.[0]?.message?.content || '';
   return parseModelJson(
-    response.choices[0].message.content,
+    content,
     { name: 'Custom Template', subject: '', body: description }
   );
 };
@@ -281,12 +294,12 @@ const runAgentTask = async (prompt, systemInstruction = '', model = DEEPSEEK_MOD
  */
 const analyzeJobOpportunity = async (emailSubject, emailBody, model = DEFAULT_MODEL) => {
   const prompt = `Analyze the following email to determine if it is a job, internship, fellowship, or career opportunity.
-Return a JSON object with:
+Return ONLY a valid JSON object with:
 - "isJobOpportunity": boolean (true if it represents a hiring opportunity, job alert, or internship)
 - "companyName": string (name of the organization/company, or "Unknown Company")
 - "jobTitle": string (e.g. "Software Engineer Intern", "Product Designer", "Data Analyst")
 - "roleType": string ("Internship", "Full-time", "Part-time", "Contract", "Fellowship", or "Other")
-- "deadline": string (ISO 8601 timestamp representing the application deadline if mentioned, or estimated timestamp 14 days from now if not explicitly stated)
+- "deadline": string or null (ISO 8601 timestamp or date string if mentioned, or null)
 - "isGenuine": boolean (true if the opportunity looks authentic, trustworthy, and from a legitimate employer)
 - "trustScore": number (integer 0 to 100 assessing trustworthiness)
 - "trustReasons": array of strings (bullet points explaining why it is genuine or highlighting red flags like requests for money, suspicious domains, vague descriptions)
@@ -303,15 +316,16 @@ ${emailBody.substring(0, 3000)}`;
     messages: [
       {
         role: 'system',
-        content: 'You are an expert career intelligence and fraud detection agent. Analyze opportunities carefully for authenticity and extract key application dates.'
+        content: 'You are an expert career intelligence and fraud detection agent. Analyze opportunities carefully for authenticity and return valid JSON only.'
       },
       { role: 'user', content: prompt }
     ],
-    max_tokens: 600,
+    max_tokens: 1000,
     temperature: 0.2
   });
 
-  return parseModelJson(response.choices[0].message.content, {
+  const content = response?.choices?.[0]?.message?.content || '';
+  return parseModelJson(content, {
     isJobOpportunity: false,
     companyName: 'Unknown',
     jobTitle: 'Opportunity',
@@ -347,11 +361,12 @@ Write a structured, persuasive application highlighting enthusiasm, technical sk
       },
       { role: 'user', content: prompt }
     ],
-    max_tokens: 500,
+    max_tokens: 1000,
     temperature: 0.7
   });
 
-  return response.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  const content = response?.choices?.[0]?.message?.content || '';
+  return content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 };
 
 module.exports = {
