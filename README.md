@@ -57,74 +57,79 @@
 
 ---
 
-## 🧠 System Mindmap & Architecture
+## 🏛️ System Architecture & Data Flow
 
 ```mermaid
-mindmap
-  root((EmailAI System))
-    Frontend (React + Vite)
-      Auth & Routing
-        Login / Signup (JWT)
-        Protected Routes
-      Email Experience
-        Inbox / Sent / Drafts / Trash / Spam
-        Rich Text Composer
-        Custom Labels & Categories
-      AI Copilot UI
-        Tone Selector (Professional / Urgent / Friendly)
-        Smart 1-Click Replies
-        Live Summary & Sentiment Badges
-      Career Agent Dashboard
-        Trust & Legitimacy Gauge (0-100%)
-        Live Deadline Countdowns
-        1-Click AI Cover Letter Drafter
-      Real-Time Layer
-        Socket.io Client
-        Instant Notification Toasts
-    Backend (Node.js + Express)
-      REST API Endpoints
-        /api/auth (Register / Login / Token Refresh)
-        /api/emails (CRUD / Search / Scheduling)
-        /api/ai (Assist / Summarize / Sentiment / Smart Replies)
-        /api/opportunities (Detect / Verify / Cover Letters)
-        /api/analytics (Volume / Peak Activity / Metrics)
-      Background Cron Scheduler
-        Scheduled Email Dispatcher
-        Deadline Alert Monitors
-      Security & Middleware
-        Helmet Headers
-        Dynamic CORS
-        bcrypt Password Hashing
-        API Rate Limiting
-    AI Inference (NVIDIA NIM)
-      Fast Foundation LLM
-        Meta Llama 3.2 11B Vision Instruct
-      Career Intelligence Engine
-        Legitimacy & Scam Verification
-        Role & Deadline Timestamp Extractor
-      Contextual Email Writing
-        Prompt-to-Email Synthesis
-        Thread Summarization
-    Database (Supabase PostgreSQL)
-      Tables
-        users (Accounts & Settings)
-        emails (Threads & Messages)
-        email_recipients (To / Cc / Bcc Relational Map)
-        labels & junction (Custom Tagging)
-        job_opportunities (Verified Listings & Deadlines)
-        email_templates (Saved Reusable Layouts)
-      Infrastructure
-        Connection Pooling
-        Relational Integrity & Foreign Keys
-        Auto-Indexing for High-Speed Queries
-    Deployment & DevOps
-      Frontend on Vercel
-        Edge CDN Routing
-        Continuous Deployment via GitHub
-      Backend on Render
-        Containerized Node.js Service
-        Auto-Build from main Branch
+flowchart TD
+    %% Styling Definitions
+    classDef clientStyle fill:#1e293b,stroke:#6366f1,stroke-width:2px,color:#ffffff;
+    classDef backendStyle fill:#0f172a,stroke:#22c55e,stroke-width:2px,color:#ffffff;
+    classDef aiStyle fill:#1e1e38,stroke:#f59e0b,stroke-width:2px,color:#ffffff;
+    classDef dbStyle fill:#111827,stroke:#38bdf8,stroke-width:2px,color:#ffffff;
+    classDef devopsStyle fill:#18181b,stroke:#a855f7,stroke-width:2px,color:#ffffff;
+
+    subgraph CLIENT ["🖥️ FRONTEND CLIENT (React 18 + Vite on Vercel)"]
+        UI["🎨 Modern UI & Glassmorphism Components"]
+        COMPOSER["✍️ AI Email Composer & Tone Picker"]
+        OPP_DASH["💼 Career Tracker & Deadline Countdown"]
+        SOCKET_C["⚡ Socket.io Real-time Client"]
+    end
+    class CLIENT,UI,COMPOSER,OPP_DASH,SOCKET_C clientStyle;
+
+    subgraph BACKEND ["⚙️ BACKEND API LAYER (Node.js + Express on Render)"]
+        API["📡 REST API Gateways (/api/*)"]
+        AUTH_MW["🔒 JWT Auth & Security Middleware"]
+        CRON["⏰ Background Cron Scheduler (Emails & Deadlines)"]
+        SOCKET_S["🔔 Socket.io Push Server"]
+        OPP_CONTROLLER["🛡️ Opportunity & Fraud Controller"]
+    end
+    class BACKEND,API,AUTH_MW,CRON,SOCKET_S,OPP_CONTROLLER backendStyle;
+
+    subgraph AI_ENGINE ["🤖 AI INTELLIGENCE LAYER (NVIDIA NIM)"]
+        LLM["⚡ Meta Llama 3.2 11B Vision Instruct (~1.0s)"]
+        PROMPT_ENG["🎯 Prompt Engineering & Tone Synthesis"]
+        FRAUD_SCAN["🛡️ Authenticity, Scam & Deadline Extractor"]
+        COVER_LETTER["✨ 1-Click AI Cover Letter Generator"]
+    end
+    class AI_ENGINE,LLM,PROMPT_ENG,FRAUD_SCAN,COVER_LETTER aiStyle;
+
+    subgraph DATABASE ["🗄️ PERSISTENCE LAYER (Supabase PostgreSQL)"]
+        USERS_TB[("👤 users\n(Auth, Profiles, Settings)")]
+        EMAILS_TB[("📬 emails & recipients\n(Inbox, Sent, Starred, Threads)")]
+        OPPS_TB[("💼 job_opportunities\n(Trust Scores, Deadlines, Reminders)")]
+        LABELS_TB[("🏷️ labels & junctions\n(Custom Color Tags)")]
+    end
+    class DATABASE,USERS_TB,EMAILS_TB,OPPS_TB,LABELS_TB dbStyle;
+
+    %% Data Connections & Flow
+    UI <== "1. User Actions & REST Queries" ==> API
+    COMPOSER -- "2. Trigger AI Drafter" --> API
+    OPP_DASH -- "3. Scan Opportunities & Set Alerts" --> OPP_CONTROLLER
+
+    API <== "4. Verify Tokens & Passwords" ==> AUTH_MW
+    API <== "5. Read / Write Relational Data" ==> DATABASE
+
+    OPP_CONTROLLER -- "6. Fast Inference Request" --> LLM
+    API -- "7. Smart Replies / Summaries" --> LLM
+    LLM --> PROMPT_ENG
+    LLM --> FRAUD_SCAN
+    LLM --> COVER_LETTER
+
+    CRON -- "8. Dispatch Scheduled Emails" --> EMAILS_TB
+    CRON -- "9. Push Instant Alerts" --> SOCKET_S
+    SOCKET_S <== "10. Real-Time WebSocket Channel" ==> SOCKET_C
 ```
+
+---
+
+### 🔄 End-to-End Request Lifecycle
+
+| Phase | Flow Description | Technologies Used |
+|---|---|---|
+| **1. Composition & AI Drafting** | The user inputs a prompt and chooses a tone (*Professional, Friendly, Urgent*). The backend sends structured system prompts to NVIDIA NIM, returning a formatted draft in **~1.0 second**. | React, Express, NVIDIA NIM (Llama 3.2) |
+| **2. Career & Scam Detection** | Incoming emails are scanned for career keywords. The AI extracts the job title, company, deadline, and calculates a **0–100% Trust Score** by evaluating domain legitimacy and fraud signals. | Llama 3.2 AI, Regex Pipeline, Supabase |
+| **3. Instant Real-Time Push** | When an email arrives or an application deadline triggers an alert, the backend pushes events instantly to active browser tabs without page refreshes. | WebSockets (Socket.io) |
+| **4. Secure Data Persistence** | User passwords are encrypted with bcrypt. Relational email threads, label junctions, and opportunity deadlines are indexed in PostgreSQL for low-latency queries. | Supabase PostgreSQL, JWT, bcryptjs |
 
 ---
 
