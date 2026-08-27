@@ -2,10 +2,12 @@ const mongoose = require('mongoose');
 const dns = require('dns');
 
 // Configure reliable DNS servers to prevent Windows SRV lookup issues with MongoDB Atlas
-try {
-  dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
-} catch (dnsErr) {
-  console.warn('DNS server setting skipped:', dnsErr.message);
+if (process.platform === 'win32') {
+  try {
+    dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+  } catch (dnsErr) {
+    console.warn('DNS server setting skipped:', dnsErr.message);
+  }
 }
 
 const connectDB = async () => {
