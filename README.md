@@ -1,6 +1,6 @@
 # ⚡ EmailAI — Intelligent AI Email Client & Career Opportunity Agent
 
-> A full-featured, AI-powered email client featuring sub-second AI email drafting, automatic career/internship opportunity detection, trust & scam verification, deadline reminders, and an interactive analytics suite.
+> A full-featured, AI-powered email management platform featuring sub-second AI email drafting, automatic career/internship opportunity detection, trust & scam verification, deadline reminders, and an interactive analytics suite.
 
 [![React](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Node.js](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -11,16 +11,122 @@
 
 ---
 
-## 🌐 Live Deployments
+## 🌐 Live Deployments & Demo Video
 
-* **Frontend Web Application (Vercel)**: [https://agenticemail-pdkn.vercel.app](https://agenticemail-pdkn.vercel.app)
-* **Backend API Server (Render)**: [https://emailai-backend-gr8m.onrender.com](https://emailai-backend-gr8m.onrender.com)
-* **Interactive API Documentation**: [https://emailai-backend-gr8m.onrender.com/api/docs](https://emailai-backend-gr8m.onrender.com/api/docs)
-* **API Health Check**: [https://emailai-backend-gr8m.onrender.com/api/health](https://emailai-backend-gr8m.onrender.com/api/health)
+* 🚀 **Live Web App (Vercel)**: [https://agenticemail-pdkn.vercel.app](https://agenticemail-pdkn.vercel.app)
+* ⚙️ **Backend API Server (Render)**: [https://emailai-backend-gr8m.onrender.com](https://emailai-backend-gr8m.onrender.com)
+* 📖 **Interactive Swagger Docs**: [https://emailai-backend-gr8m.onrender.com/api/docs](https://emailai-backend-gr8m.onrender.com/api/docs)
+* 🩺 **API Health Check**: [https://emailai-backend-gr8m.onrender.com/api/health](https://emailai-backend-gr8m.onrender.com/api/health)
+
+### 🎥 Live Video Walkthrough
+[![EmailAI Video Walkthrough](https://img.shields.io/badge/Watch%20Demo%20Video-YouTube%20%2F%20Loom-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](YOUR_VIDEO_LINK_HERE)
+
+> *Replace `YOUR_VIDEO_LINK_HERE` with your YouTube, Loom, or Drive video walkthrough link.*
 
 ---
 
-## 🚀 Key Features
+## 📸 Screenshots & UI Showcase
+
+<div align="center">
+
+### 1. 🔐 Authentication & Login
+![Login Screen](./screenshots/login.png)
+*(Drop your login screenshot at `screenshots/login.png` or paste an image URL)*
+
+---
+
+### 2. 📬 Modern Inbox & Real-Time Dashboard
+![Inbox Dashboard](./screenshots/dashboard.png)
+*(Drop your dashboard screenshot at `screenshots/dashboard.png`)*
+
+---
+
+### 3. ✍️ AI Compose Assistant & Tone Customizer
+![AI Compose Assistant](./screenshots/compose.png)
+*(Drop your compose modal screenshot at `screenshots/compose.png`)*
+
+---
+
+### 4. 🛡️ Career Opportunities & Scam Verifier
+![Career Opportunities Tracker](./screenshots/opportunities.png)
+*(Drop your opportunities tracker screenshot at `screenshots/opportunities.png`)*
+
+</div>
+
+---
+
+## 🧠 System Mindmap & Architecture
+
+```mermaid
+mindmap
+  root((EmailAI System))
+    Frontend (React + Vite)
+      Auth & Routing
+        Login / Signup (JWT)
+        Protected Routes
+      Email Experience
+        Inbox / Sent / Drafts / Trash / Spam
+        Rich Text Composer
+        Custom Labels & Categories
+      AI Copilot UI
+        Tone Selector (Professional / Urgent / Friendly)
+        Smart 1-Click Replies
+        Live Summary & Sentiment Badges
+      Career Agent Dashboard
+        Trust & Legitimacy Gauge (0-100%)
+        Live Deadline Countdowns
+        1-Click AI Cover Letter Drafter
+      Real-Time Layer
+        Socket.io Client
+        Instant Notification Toasts
+    Backend (Node.js + Express)
+      REST API Endpoints
+        /api/auth (Register / Login / Token Refresh)
+        /api/emails (CRUD / Search / Scheduling)
+        /api/ai (Assist / Summarize / Sentiment / Smart Replies)
+        /api/opportunities (Detect / Verify / Cover Letters)
+        /api/analytics (Volume / Peak Activity / Metrics)
+      Background Cron Scheduler
+        Scheduled Email Dispatcher
+        Deadline Alert Monitors
+      Security & Middleware
+        Helmet Headers
+        Dynamic CORS
+        bcrypt Password Hashing
+        API Rate Limiting
+    AI Inference (NVIDIA NIM)
+      Fast Foundation LLM
+        Meta Llama 3.2 11B Vision Instruct
+      Career Intelligence Engine
+        Legitimacy & Scam Verification
+        Role & Deadline Timestamp Extractor
+      Contextual Email Writing
+        Prompt-to-Email Synthesis
+        Thread Summarization
+    Database (Supabase PostgreSQL)
+      Tables
+        users (Accounts & Settings)
+        emails (Threads & Messages)
+        email_recipients (To / Cc / Bcc Relational Map)
+        labels & junction (Custom Tagging)
+        job_opportunities (Verified Listings & Deadlines)
+        email_templates (Saved Reusable Layouts)
+      Infrastructure
+        Connection Pooling
+        Relational Integrity & Foreign Keys
+        Auto-Indexing for High-Speed Queries
+    Deployment & DevOps
+      Frontend on Vercel
+        Edge CDN Routing
+        Continuous Deployment via GitHub
+      Backend on Render
+        Containerized Node.js Service
+        Auto-Build from main Branch
+```
+
+---
+
+## 🚀 Core Features Breakdown
 
 ### 1. 🤖 AI Writing Assistant (Sub-Second Latency)
 * **AI Email Drafter**: Generate full, context-rich emails from quick prompts with selectable tones (*Professional, Friendly, Urgent, Persuasive*).
@@ -48,28 +154,12 @@
 
 ---
 
-## 🏗️ Architecture & Tech Stack
-
-```mermaid
-graph TD
-    Client[React + Vite Frontend (Vercel)] <-->|REST API + WebSockets| Server[Express.js Backend (Render)]
-    Server <-->|PostgreSQL Client| Database[(Supabase DB)]
-    Server <-->|Fast NIM Inference| AI[NVIDIA NIM - Llama 3.2 11B]
-```
-
-* **Frontend**: React 18, Vite, Framer Motion, Lucide Icons, Chart.js, React Hot Toast, TanStack Query.
-* **Backend**: Node.js, Express.js, Socket.io, Helmet, CORS, Morgan, JWT Auth, bcryptjs.
-* **Database**: Supabase (PostgreSQL) with relational schema and indexes.
-* **AI Provider**: NVIDIA NIM Endpoints running `meta/llama-3.2-11b-vision-instruct`.
-
----
-
 ## 🛠️ Local Development Setup
 
 ### 1. Prerequisites
 * **Node.js** v18+ installed
 * A free **[Supabase](https://supabase.com)** project
-* An **[NVIDIA NIM](https://build.nvidia.com)** or OpenAI API key
+* An **[NVIDIA NIM](https://build.nvidia.com)** API key
 
 ### 2. Clone the Repository
 ```bash
