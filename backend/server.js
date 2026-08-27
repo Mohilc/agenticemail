@@ -6,7 +6,7 @@ const http = require('http');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const connectDB = require('./config/db');
+// No Mongoose DB connection needed here (Supabase is lazily loaded)
 const { initSocket } = require('./config/socket');
 const { startScheduler } = require('./services/emailService');
 const errorHandler = require('./middleware/errorHandler');
@@ -26,8 +26,7 @@ const server = http.createServer(app);
 // Initialize Socket.io
 initSocket(server);
 
-// Connect to database
-connectDB();
+// Database connection handled via Supabase API calls
 
 // Middleware
 app.use(helmet());

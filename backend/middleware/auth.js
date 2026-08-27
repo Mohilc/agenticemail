@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { supabase } = require('../config/supabase');
 
 // Protect routes - verify JWT token
 const protect = async (req, res, next) => {
@@ -22,16 +22,36 @@ const protect = async (req, res, next) => {
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    
+    // Fetch user from Supabase
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', decoded.id)
+      .maybeSingle();
 
-    if (!user) {
+    if (error || !user) {
       return res.status(401).json({
         success: false,
         message: 'Not authorized - user not found',
       });
     }
 
-    req.user = user;
+    // Inject user fields to mimic MongoDB _id for downstream controllers
+    req.user = {
+      _id: user.id,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role || 'user',
+      avatar: user.avatar,
+      settings: {
+        theme: user.theme || 'light',
+        notifications: user.notifications !== false,
+        signature: user.signature || '',
+      }
+    };
+    
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
