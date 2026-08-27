@@ -114,27 +114,61 @@ const fetchPopulatedEmails = async (emailIds) => {
   });
 };
 
+// Helper to resolve or automatically create recipient users
+const resolveOrUpsertUsers = async (emailList) => {
+  if (!emailList || emailList.length === 0) return [];
+  const normalized = (Array.isArray(emailList) ? emailList : [emailList])
+    .map(e => (typeof e === 'string' ? e.trim().toLowerCase() : ''))
+    .filter(Boolean);
+
+  const resolved = [];
+  for (const emailStr of normalized) {
+    let { data: existingUser } = await supabase
+      .from('users')
+      .select('id, name, email, avatar')
+      .eq('email', emailStr)
+      .maybeSingle();
+
+    if (!existingUser) {
+      const namePart = emailStr.split('@')[0];
+      const displayName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+      const { data: createdUser } = await supabase
+        .from('users')
+        .insert({
+          name: displayName,
+          email: emailStr,
+          password: 'external_contact_user',
+          avatar: '',
+        })
+        .select('id, name, email, avatar')
+        .single();
+      existingUser = createdUser;
+    }
+    if (existingUser) {
+      resolved.push(existingUser);
+    }
+  }
+  return resolved;
+};
+
 // @desc    Compose and send email
 // @route   POST /api/emails
 const composeEmail = async (req, res, next) => {
   try {
     const { to, cc, bcc, subject, body, isDraft, scheduledAt, labels } = req.body;
 
-    // Resolve recipient emails to user IDs
-    const { data: recipientUsers } = await supabase
-      .from('users')
-      .select('id, email')
-      .in('email', to || []);
+    // Resolve or automatically create recipient users
+    const recipientUsers = await resolveOrUpsertUsers(to);
 
-    if (!recipientUsers || recipientUsers.length === 0) {
+    if (recipientUsers.length === 0) {
       return res.status(400).json({
         success: false,
         message: 'No valid recipients found',
       });
     }
 
-    const { data: ccUsers } = cc && cc.length > 0 ? await supabase.from('users').select('id, email').in('email', cc) : { data: [] };
-    const { data: bccUsers } = bcc && bcc.length > 0 ? await supabase.from('users').select('id, email').in('email', bcc) : { data: [] };
+    const ccUsers = await resolveOrUpsertUsers(cc);
+    const bccUsers = await resolveOrUpsertUsers(bcc);
 
     // Create the main email record
     const { data: sentEmail, error: composeErr } = await supabase
