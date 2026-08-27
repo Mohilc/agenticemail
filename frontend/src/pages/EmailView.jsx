@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, Star, Trash2, Archive, Reply, Forward,
-  Sparkles, MessageSquare, BarChart2,
+  Sparkles, MessageSquare, BarChart2, Briefcase, ShieldCheck, ShieldAlert, Calendar, ExternalLink
 } from 'lucide-react';
+import api from '../services/api';
 import { emailService } from '../services/emailService';
 import { aiService } from '../services/aiService';
 import { Avatar, Badge, Button, Loader } from '../components/UI/UI';
@@ -20,6 +21,7 @@ const EmailView = () => {
   const [summary, setSummary] = useState(null);
   const [sentiment, setSentiment] = useState(null);
   const [smartReplies, setSmartReplies] = useState([]);
+  const [opportunity, setOpportunity] = useState(null);
   const [aiLoading, setAiLoading] = useState({});
 
   useEffect(() => {
@@ -74,6 +76,23 @@ const EmailView = () => {
       toast.error('Failed to generate replies');
     } finally {
       setAiLoading((prev) => ({ ...prev, smartReply: false }));
+    }
+  };
+
+  const handleAnalyzeOpportunity = async () => {
+    setAiLoading((prev) => ({ ...prev, opportunity: true }));
+    try {
+      const res = await api.post(`/opportunities/analyze/${id}`);
+      if (res.data.isOpportunity) {
+        setOpportunity(res.data.data);
+        toast.success(`Tracked: ${res.data.data.jobTitle} at ${res.data.data.companyName}!`);
+      } else {
+        toast('No career opportunity detected in this email', { icon: 'ℹ️' });
+      }
+    } catch {
+      toast.error('Failed to scan opportunity');
+    } finally {
+      setAiLoading((prev) => ({ ...prev, opportunity: false }));
     }
   };
 
@@ -196,7 +215,44 @@ const EmailView = () => {
           >
             Smart Reply
           </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<Briefcase size={14} />}
+            loading={aiLoading.opportunity}
+            onClick={handleAnalyzeOpportunity}
+          >
+            Scan Job Opportunity
+          </Button>
         </div>
+
+        {/* Career Opportunity Card */}
+        {opportunity && (
+          <motion.div
+            className="email-view-ai-result"
+            style={{ borderLeft: '4px solid #6366f1', background: 'rgba(99, 102, 241, 0.05)' }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+          >
+            <div className="email-view-ai-result-header" style={{ color: '#6366f1' }}>
+              <Briefcase size={16} />
+              Detected Opportunity: {opportunity.jobTitle} @ {opportunity.companyName} ({opportunity.roleType})
+            </div>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '8px', fontSize: '13px', flexWrap: 'wrap' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: opportunity.trustScore >= 75 ? '#22c55e' : '#f97316', fontWeight: 600 }}>
+                {opportunity.trustScore >= 75 ? <ShieldCheck size={16} /> : <ShieldAlert size={16} />}
+                {opportunity.trustScore}% Trust Score ({opportunity.trustScore >= 75 ? 'Verified Genuine' : 'Caution'})
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-secondary)' }}>
+                <Calendar size={14} />
+                Deadline: {opportunity.deadline ? new Date(opportunity.deadline).toLocaleDateString() : 'Rolling'}
+              </span>
+              <Button size="sm" variant="primary" onClick={() => navigate('/opportunities')}>
+                View in Opportunity Tracker →
+              </Button>
+            </div>
+          </motion.div>
+        )}
 
         {/* AI Results */}
         {summary && (

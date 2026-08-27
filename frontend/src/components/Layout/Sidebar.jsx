@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Inbox, Send, FileEdit, Star, Trash2, AlertOctagon,
-  Archive, Tag, BarChart3, Settings, PenSquare, Mail, FileText,
+  Archive, Tag, BarChart3, Settings, PenSquare, Mail, FileText, Briefcase,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { emailService } from '../../services/emailService';
@@ -113,6 +113,14 @@ const Sidebar = ({ isOpen, onClose }) => {
           )}
 
           <div className="sidebar-section sidebar-bottom">
+            <NavLink
+              to="/opportunities"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'sidebar-link-active' : ''}`}
+              onClick={onClose}
+            >
+              <Briefcase size={20} />
+              <span>Opportunities</span>
+            </NavLink>
             <NavLink
               to="/templates"
               className={({ isActive }) => `sidebar-link ${isActive ? 'sidebar-link-active' : ''}`}

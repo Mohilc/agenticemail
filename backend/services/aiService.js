@@ -276,6 +276,84 @@ const runAgentTask = async (prompt, systemInstruction = '', model = DEEPSEEK_MOD
   return response.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 };
 
+/**
+ * Analyze an email for job/internship opportunities, trust score, and application deadlines
+ */
+const analyzeJobOpportunity = async (emailSubject, emailBody, model = DEFAULT_MODEL) => {
+  const prompt = `Analyze the following email to determine if it is a job, internship, fellowship, or career opportunity.
+Return a JSON object with:
+- "isJobOpportunity": boolean (true if it represents a hiring opportunity, job alert, or internship)
+- "companyName": string (name of the organization/company, or "Unknown Company")
+- "jobTitle": string (e.g. "Software Engineer Intern", "Product Designer", "Data Analyst")
+- "roleType": string ("Internship", "Full-time", "Part-time", "Contract", "Fellowship", or "Other")
+- "deadline": string (ISO 8601 timestamp representing the application deadline if mentioned, or estimated timestamp 14 days from now if not explicitly stated)
+- "isGenuine": boolean (true if the opportunity looks authentic, trustworthy, and from a legitimate employer)
+- "trustScore": number (integer 0 to 100 assessing trustworthiness)
+- "trustReasons": array of strings (bullet points explaining why it is genuine or highlighting red flags like requests for money, suspicious domains, vague descriptions)
+- "applyUrl": string or null (application link if present)
+- "applyEmail": string or null (application or HR contact email if present)
+- "summary": string (2-sentence summary of the role and key requirements)
+
+Email Subject: ${emailSubject}
+Email Body:
+${emailBody.substring(0, 3000)}`;
+
+  const response = await openai.chat.completions.create({
+    model,
+    messages: [
+      {
+        role: 'system',
+        content: 'You are an expert career intelligence and fraud detection agent. Analyze opportunities carefully for authenticity and extract key application dates.'
+      },
+      { role: 'user', content: prompt }
+    ],
+    max_tokens: 600,
+    temperature: 0.2
+  });
+
+  return parseModelJson(response.choices[0].message.content, {
+    isJobOpportunity: false,
+    companyName: 'Unknown',
+    jobTitle: 'Opportunity',
+    roleType: 'Other',
+    deadline: null,
+    isGenuine: true,
+    trustScore: 70,
+    trustReasons: ['Standard job description structure'],
+    applyUrl: null,
+    applyEmail: null,
+    summary: 'Career opportunity mentioned in email.'
+  });
+};
+
+/**
+ * Generate a personalized cover letter and application response for a detected job opportunity
+ */
+const draftJobApplication = async (jobDetails, candidateName = 'Mohil', model = DEFAULT_MODEL) => {
+  const prompt = `Write a compelling, professional cover letter and application email for the following position:
+Candidate Name: ${candidateName}
+Company: ${jobDetails.companyName}
+Role: ${jobDetails.jobTitle} (${jobDetails.roleType})
+Job Summary: ${jobDetails.summary || ''}
+
+Write a structured, persuasive application highlighting enthusiasm, technical skills, problem solving, and why the candidate is a strong fit. Keep it professional and concise (under 250 words).`;
+
+  const response = await openai.chat.completions.create({
+    model,
+    messages: [
+      {
+        role: 'system',
+        content: 'You are a professional career coach and email copywriter specializing in high-conversion job applications.'
+      },
+      { role: 'user', content: prompt }
+    ],
+    max_tokens: 500,
+    temperature: 0.7
+  });
+
+  return response.choices[0].message.content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+};
+
 module.exports = {
   openai,
   deepseekClient,
@@ -288,4 +366,6 @@ module.exports = {
   categorizeEmail,
   generateTemplate,
   runAgentTask,
+  analyzeJobOpportunity,
+  draftJobApplication,
 };

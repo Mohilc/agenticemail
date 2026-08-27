@@ -19,6 +19,7 @@ const aiRoutes = require('./routes/aiRoutes');
 const labelRoutes = require('./routes/labelRoutes');
 const templateRoutes = require('./routes/templateRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const opportunityRoutes = require('./routes/opportunityRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -51,6 +52,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/labels', labelRoutes);
 app.use('/api/templates', templateRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/opportunities', opportunityRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

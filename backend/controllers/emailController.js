@@ -1,6 +1,7 @@
 const { supabase } = require('../config/supabase');
 const { getIO } = require('../config/socket');
 const { getEmailThread } = require('../services/emailService');
+const { analyzeJobOpportunity } = require('../services/aiService');
 
 // Helper to format Email model to match MongoDB JSON structure for the frontend
 const formatEmail = (email, fromUser, toUsers, ccUsers, bccUsers, labels) => {
@@ -249,6 +250,35 @@ const composeEmail = async (req, res, next) => {
           io.to(recipientId).emit('newEmail', populated);
         } catch (socketErr) {
           // Socket not initialized, skip
+        }
+
+        // Automatic career / internship opportunity detection
+        const jobKeywords = /(job|internship|hiring|career|fellowship|vacancy|opening|role|position|apply|application|stipend|salary|developer|engineer)/i;
+        if (jobKeywords.test(subject || '') || jobKeywords.test(body || '')) {
+          (async () => {
+            try {
+              const analysis = await analyzeJobOpportunity(subject, body);
+              if (analysis.isJobOpportunity) {
+                await supabase.from('job_opportunities').insert({
+                  email_id: inboxEmail.id,
+                  user_id: recipientId,
+                  company_name: analysis.companyName,
+                  job_title: analysis.jobTitle,
+                  role_type: analysis.roleType,
+                  deadline: analysis.deadline,
+                  is_genuine: analysis.isGenuine,
+                  trust_score: analysis.trustScore,
+                  trust_reasons: analysis.trustReasons,
+                  apply_url: analysis.applyUrl,
+                  apply_email: analysis.applyEmail,
+                  status: 'detected',
+                  reminder_set: true,
+                });
+              }
+            } catch (autoErr) {
+              console.warn('Auto-opportunity extraction warning:', autoErr.message);
+            }
+          })();
         }
       }
     }

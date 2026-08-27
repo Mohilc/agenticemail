@@ -13,6 +13,7 @@ import EmailView from './pages/EmailView';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Templates from './pages/Templates';
+import Opportunities from './pages/Opportunities';
 import { Loader } from './components/UI/UI';
 
 const queryClient = new QueryClient({
@@ -94,6 +95,7 @@ function AppRoutes() {
         <Route path="analytics" element={<Analytics />} />
         <Route path="settings" element={<Settings />} />
         <Route path="templates" element={<Templates />} />
+        <Route path="opportunities" element={<Opportunities />} />
       </Route>
 
       {/* Catch all */}
