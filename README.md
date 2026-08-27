@@ -117,64 +117,30 @@
 
 ---
 
-## 🔄 Detailed Request Lifecycle & Flow
+## 🔄 How It Works — Request Flow
 
 ```mermaid
-flowchart TD
-    %% Styling Definitions
-    classDef clientStyle fill:#1e293b,stroke:#6366f1,stroke-width:2px,color:#ffffff;
-    classDef backendStyle fill:#0f172a,stroke:#22c55e,stroke-width:2px,color:#ffffff;
-    classDef aiStyle fill:#1e1e38,stroke:#f59e0b,stroke-width:2px,color:#ffffff;
-    classDef dbStyle fill:#111827,stroke:#38bdf8,stroke-width:2px,color:#ffffff;
-
-    subgraph CLIENT ["🖥️ FRONTEND CLIENT (React 18 + Vite on Vercel)"]
-        UI["🎨 Modern UI & Glassmorphism Components"]
-        COMPOSER["✍️ AI Email Composer & Tone Picker"]
-        OPP_DASH["💼 Career Tracker & Deadline Countdown"]
-        SOCKET_C["⚡ Socket.io Real-time Client"]
-    end
-    class CLIENT,UI,COMPOSER,OPP_DASH,SOCKET_C clientStyle;
-
-    subgraph BACKEND ["⚙️ BACKEND API LAYER (Node.js + Express on Render)"]
-        API["📡 REST API Gateways (/api/*)"]
-        AUTH_MW["🔒 JWT Auth & Security Middleware"]
-        CRON["⏰ Background Cron Scheduler"]
-        SOCKET_S["🔔 Socket.io Push Server"]
-        OPP_CONTROLLER["🛡️ Opportunity & Fraud Controller"]
-    end
-    class BACKEND,API,AUTH_MW,CRON,SOCKET_S,OPP_CONTROLLER backendStyle;
-
-    subgraph AI_ENGINE ["🤖 AI INTELLIGENCE LAYER (NVIDIA NIM)"]
-        LLM["⚡ Meta Llama 3.2 11B (~1.0s)"]
-        PROMPT_ENG["🎯 Prompt Engineering & Tone Customizer"]
-        FRAUD_SCAN["🛡️ Authenticity, Scam & Deadline Extractor"]
-        COVER_LETTER["✨ 1-Click AI Cover Letter Generator"]
-    end
-    class AI_ENGINE,LLM,PROMPT_ENG,FRAUD_SCAN,COVER_LETTER aiStyle;
-
-    subgraph DATABASE ["🗄️ PERSISTENCE LAYER (Supabase PostgreSQL)"]
-        USERS_TB[("👤 users\n(Auth & Profiles)")]
-        EMAILS_TB[("📬 emails & recipients\n(Threads & Folders)")]
-        OPPS_TB[("💼 job_opportunities\n(Trust Scores & Deadlines)")]
-        LABELS_TB[("🏷️ labels\n(Custom Color Tags)")]
-    end
-    class DATABASE,USERS_TB,EMAILS_TB,OPPS_TB,LABELS_TB dbStyle;
-
-    %% Data Connections
-    UI <== "1. User Actions & REST Queries" ==> API
-    COMPOSER -- "2. Trigger AI Drafter" --> API
-    OPP_DASH -- "3. Scan Opportunities & Set Alerts" --> OPP_CONTROLLER
-    API <== "4. Verify Tokens" ==> AUTH_MW
-    API <== "5. Read / Write Data" ==> DATABASE
-    OPP_CONTROLLER -- "6. Fast NIM Inference" --> LLM
-    API -- "7. Smart Replies / Summaries" --> LLM
-    LLM --> PROMPT_ENG
-    LLM --> FRAUD_SCAN
-    LLM --> COVER_LETTER
-    CRON -- "8. Scheduled Emails & Alerts" --> EMAILS_TB
-    CRON -- "9. Push Instant Alerts" --> SOCKET_S
-    SOCKET_S <== "10. Real-Time WebSockets" ==> SOCKET_C
+graph TB
+    A["👤 User Browser"] -->|REST API calls| B["⚙️ Express.js Backend"]
+    A -->|WebSocket| C["🔔 Socket.io Server"]
+    B -->|Auth check| D["🔒 JWT Middleware"]
+    B -->|AI requests| E["🤖 NVIDIA NIM API"]
+    B -->|Data queries| F[("🗄️ Supabase PostgreSQL")]
+    C -->|Live push| A
+    E -->|Llama 3.2 response ~1s| B
 ```
+
+### 🧩 Layer-by-Layer Breakdown
+
+| Layer | Technology | What It Does |
+|:---:|---|---|
+| **🖥️ Frontend** | React 18 + Vite (Vercel) | Modern UI with compose modal, inbox folders, career dashboard, real-time toasts |
+| **📡 API Gateway** | Express.js REST (Render) | Routes for auth, emails, AI features, opportunities, analytics |
+| **🔒 Security** | JWT + bcrypt + Helmet | Token-based auth, encrypted passwords, secure HTTP headers, rate limiting |
+| **🤖 AI Engine** | NVIDIA NIM (Llama 3.2 11B) | Email drafting, smart replies, summarization, job/scam detection, cover letters |
+| **⚡ Real-Time** | Socket.io (WebSockets) | Instant new-email notifications and deadline alerts without page refresh |
+| **🗄️ Database** | Supabase PostgreSQL | Relational storage for users, emails, recipients, labels, job opportunities |
+| **🚀 DevOps** | GitHub → Vercel + Render | Auto-deploy on every `git push` to `main` branch |
 
 ---
 
